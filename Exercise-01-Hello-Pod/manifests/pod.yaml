@@ -1,0 +1,14 @@
+# Declarative equivalent of:
+#   kubectl run hello-k8s --image=nginx --port=80
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-k8s
+  labels:
+    run: hello-k8s          # same label kubectl run adds; the Service selects on it
+spec:
+  containers:
+    - name: hello-k8s
+      image: nginx           # stands in for Zepto's storefront web app
+      ports:
+        - containerPort: 80  # nginx listens on 80 inside the container

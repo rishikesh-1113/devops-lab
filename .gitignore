@@ -1,0 +1,18 @@
+# Never commit cluster credentials or local tool state
+.kube/
+kubeconfig*
+*.kubeconfig
+.minikube/
+.env
+*.pem
+*.key
+
+# Downloaded installers
+minikube-linux-amd64
+kubectl
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
