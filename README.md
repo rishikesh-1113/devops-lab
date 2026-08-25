@@ -12,6 +12,7 @@ storefront / delivery-status web app on Kubernetes (simulated with `nginx`).
 | # | Exercise | Folder | Status |
 |---|----------|--------|--------|
 | 1 | Hello Pod – run nginx as a Pod and expose it with a NodePort Service | [Exercise-01-Hello-Pod](Exercise-01-Hello-Pod/) | Done |
+| 2 | Deploy a Flask app on Minikube using kubectl and YAML (Deployment + Service) | [Exercise-02-Flask-on-Minikube](Exercise-02-Flask-on-Minikube/) | Done |
 
 ## Repository layout
 
@@ -27,6 +28,13 @@ storefront / delivery-status web app on Kubernetes (simulated with `nginx`).
     │   ├── pod.yaml
     │   └── service.yaml
     └── outputs/             # terminal output + screenshot captured while running
+└── Exercise-02-Flask-on-Minikube/
+    ├── README.md            # steps, explanation, troubleshooting, Q&A
+    ├── app.py, Dockerfile, .dockerignore
+    ├── flask-deployment.yaml          # Deployment + NodePort Service (final)
+    ├── steps/flask-deployment-step5.yaml  # Deployment only
+    ├── run.ps1 / run.sh / cleanup.sh
+    └── outputs/
 ```
 
 ## Tooling
