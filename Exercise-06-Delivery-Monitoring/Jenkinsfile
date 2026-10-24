@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_DIR = "${WORKSPACE}/Exercise-06-Delivery-Monitoring"
+    }
+
+    stages {
+        stage('Check Files') {
+            steps {
+                dir("${APP_DIR}") {
+                    sh '''
+                    ls -l
+                    test -f delivery_metrics.py
+                    test -f prometheus.yml
+                    test -f alert_rules.yml
+                    echo "All monitoring files found"
+                    '''
+                }
+            }
+        }
+        stage('Check Python Syntax') {
+            steps {
+                dir("${APP_DIR}") {
+                    sh 'python3 -m py_compile delivery_metrics.py && echo "delivery_metrics.py syntax OK"'
+                }
+            }
+        }
+        stage('Validate Prometheus Config') {
+            steps {
+                dir("${APP_DIR}") {
+                    sh '''
+                    python3 -c "import yaml; yaml.safe_load(open('prometheus.yml')); r = yaml.safe_load(open('alert_rules.yml')); print('YAML valid. Alert rules:', [x['alert'] for g in r['groups'] for x in g['rules']])"
+                    '''
+                }
+            }
+        }
+        stage('Run Metrics Exporter') {
+            steps {
+                dir("${APP_DIR}") {
+                    sh '''
+                    nohup python3 delivery_metrics.py > exporter.log 2>&1 &
+                    echo $! > exporter.pid
+                    sleep 5
+                    curl -s http://localhost:8000/metrics | grep -E "^(total_deliveries|pending_deliveries|on_the_way_deliveries|average_delivery_time_sum|average_delivery_time_count) "
+                    kill $(cat exporter.pid)
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            dir("${APP_DIR}") {
+                sh 'if [ -f exporter.pid ]; then kill $(cat exporter.pid) 2>/dev/null || true; fi'
+            }
+        }
+        success {
+            echo 'Delivery monitoring pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs for more details.'
+        }
+    }
+}
